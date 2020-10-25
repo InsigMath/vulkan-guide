@@ -7,6 +7,8 @@
 #include <vk_types.h>
 #include <vk_initializers.h>
 
+#include <iostream>
+
 void VulkanEngine::init()
 {
 	// We initialize SDL and create a window with it. 
@@ -51,7 +53,9 @@ void VulkanEngine::run()
 		while (SDL_PollEvent(&e) != 0)
 		{
 			//close the window when user alt-f4s or clicks the X button			
-			if (e.type == SDL_QUIT) bQuit = true;
+			if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_q || e.key.keysym.sym == SDLK_x) {
+				bQuit = true;
+			}
 		}
 
 		draw();
