@@ -7,7 +7,23 @@
 #include <vk_types.h>
 #include <vk_initializers.h>
 
+// Bootstrap library
+#include "VkBootstrap.h"
+
 #include <iostream>
+
+using namespace std;
+// we want to immediately abort when there is an error. In normal engines this would give an 
+// error message to the user, or perform a dump of state.
+//#define VK_CHECK(x)
+//	do {
+//		VkResult err = x;
+//		if (err)
+//		{
+//			std::cout << "Detected Vulkan error: " << err << std::endl;
+//			abort();
+//		}
+//	} while (0)
 
 void VulkanEngine::init()
 {
@@ -24,10 +40,33 @@ void VulkanEngine::init()
 		_windowExtent.height,
 		window_flags
 	);
+
+	// load the core vulkan structures
+	init_vulkan();
 	
 	//everything went fine
 	_isInitialized = true;
 }
+
+void VulkanEngine::init_vulkan()
+{
+	vkb::InstanceBuilder builder;
+
+	// make the Vulkan instance, wih basic debug features
+	auto inst_ret = builder.set_app_name("Example Vulkan Application")
+		.request_validation_layers(true)
+		.require_api_version(1, 1, 0)
+		.use_default_debug_messenger()
+		.build();
+
+	vkb::Instance vkb_inst = inst_ret.value();
+
+	// store the instance
+	_instance = vkb_inst.instance;
+	// store the debug messenger
+	_debug_messenger = vkb_inst.debug_messenger;
+}
+
 void VulkanEngine::cleanup()
 {	
 	if (_isInitialized) {
