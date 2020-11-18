@@ -21,6 +21,30 @@ public:
 
 	struct SDL_Window* _window{ nullptr };
 
+	VkSwapchainKHR _swapchain; // from other articles
+
+	// image format expected by the windowing system
+	VkFormat _swapchainImageFormat;
+
+	//arrray of images from the swapchain
+	std::vector<VkImage> _swapchainImages;
+
+	// array of image-views from the swapchain
+	std::vector<VkImageView> _swapchainImageViews;
+
+	VkQueue _graphicsQueue; // queue we will submit to
+	uint32_t _graphicsQueueFamily; // family of that queue
+
+	VkCommandPool _commandPool; // the command pool for our commands
+	VkCommandBuffer _mainCommandBuffer; //the buffer we will record into
+
+	VkRenderPass _renderPass;
+	std::vector<VkFramebuffer> _framebuffers;
+
+	VkSemaphore _presentSemaphore, _renderSemaphore;
+	VkFence _renderFence;
+
+
 	//initializes everything in the engine
 	void init();
 
@@ -36,4 +60,9 @@ public:
 private:
 
 	void init_vulkan();
+	void init_swapchain();
+	void init_commands();
+	void init_sync_structures();
+	void init_default_renderpass();
+	void init_framebuffers();
 };
