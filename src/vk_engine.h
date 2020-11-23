@@ -5,9 +5,28 @@
 
 #include <vk_types.h>
 
+struct DeletionQueue
+{
+	std::deque<std::function<void()>> deletors;
+
+	void push_function(std::function<void()>&& function) {
+		deletors.push_back(function);
+	}
+
+	void flush() {
+		// reverse iterate the deletion queue to execute all the functions
+		for (auto it = deletors.rbegin(); it != deletors.rend(); it++) {
+			(*it)(); // call functors
+		}
+
+		deletors.clear();
+	}
+};
+
 class VulkanEngine {
 public:
 
+	int _selectedShader{ 0 };
 	VkInstance _instance; // Vulkan library handle
 	VkDebugUtilsMessengerEXT _debug_messenger; // Vulkan debug output handle
 	VkPhysicalDevice _chosenGPU; // gpu chosen as the default device
@@ -47,6 +66,9 @@ public:
 	VkPipelineLayout _trianglePipelineLayout;
 
 	VkPipeline _trianglePipeline;
+	VkPipeline _redTrianglePipeline;
+
+	DeletionQueue _mainDeletionQueue;
 
 	// loads a shader module from a spir-v file. Returns false if it errors
 	bool load_shader_module(const char* filePath, VkShaderModule* outShaderModule);
