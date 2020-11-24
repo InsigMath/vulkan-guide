@@ -3,7 +3,9 @@
 
 #pragma once
 
-#include <vk_types.h>
+#include <vk_mesh.h>
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 
 struct DeletionQueue
 {
@@ -21,6 +23,11 @@ struct DeletionQueue
 
 		deletors.clear();
 	}
+};
+
+struct MeshPushConstants {
+	glm::vec4 data;
+	glm::mat4 render_matrix;
 };
 
 class VulkanEngine {
@@ -70,6 +77,13 @@ public:
 
 	DeletionQueue _mainDeletionQueue;
 
+	VmaAllocator _allocator;
+
+	VkPipeline _meshPipeline;
+	Mesh _triangleMesh;
+
+	VkPipelineLayout _meshPipelineLayout;
+
 	// loads a shader module from a spir-v file. Returns false if it errors
 	bool load_shader_module(const char* filePath, VkShaderModule* outShaderModule);
 
@@ -94,6 +108,8 @@ private:
 	void init_sync_structures();
 	void init_default_renderpass();
 	void init_framebuffers();
+	void load_meshes();
+	void upload_mesh(Mesh& mesh);
 };
 
 class PipelineBuilder {
