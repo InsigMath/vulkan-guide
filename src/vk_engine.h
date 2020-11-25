@@ -48,6 +48,21 @@ public:
 	// 
 	std::vector<RenderObject> _renderables;
 
+	std::unordered_map<std::string, Material> _materials;
+	std::unordered_map<std::string, Mesh> _meshes;
+
+	// create material and add it to the map
+	Material* create_material(VkPipeline pipeline, VkPipelineLayout layout, const std::string& name);
+
+	// returns the nullptr if it cant be found
+	Material* get_material(const std::string& name);
+
+	// returns nullptr if it cant be found
+	Mesh* get_mesh(const std::string& name);
+
+	// our draw function
+	void draw_objects(VkCommandBuffer cmd, RenderObject* first, int count);
+
 	int _selectedShader{ 0 };
 	VkInstance _instance; // Vulkan library handle
 	VkDebugUtilsMessengerEXT _debug_messenger; // Vulkan debug output handle
@@ -134,6 +149,7 @@ private:
 	void init_framebuffers();
 	void load_meshes();
 	void upload_mesh(Mesh& mesh);
+	void init_scene();
 };
 
 class PipelineBuilder {
