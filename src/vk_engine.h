@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <unordered_map>
 #include <vk_mesh.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -25,13 +26,27 @@ struct DeletionQueue
 	}
 };
 
+struct Material {
+	VkPipeline pipeline;
+	VkPipelineLayout pipelineLayout;
+};
+
 struct MeshPushConstants {
 	glm::vec4 data;
 	glm::mat4 render_matrix;
 };
 
+struct RenderObject {
+	Mesh* mesh;
+	Material* material;
+	glm::mat4 transformMatrix;
+};
+
 class VulkanEngine {
 public:
+
+	// 
+	std::vector<RenderObject> _renderables;
 
 	int _selectedShader{ 0 };
 	VkInstance _instance; // Vulkan library handle
@@ -80,9 +95,18 @@ public:
 	VmaAllocator _allocator;
 
 	VkPipeline _meshPipeline;
+
+	VkImageView _depthImageView;
+	AllocatedImage _depthImage;
+
+	// the format for the depth image
+	VkFormat _depthFormat;
+
 	Mesh _triangleMesh;
+	Mesh _monkeyMesh;
 
 	VkPipelineLayout _meshPipelineLayout;
+
 
 	// loads a shader module from a spir-v file. Returns false if it errors
 	bool load_shader_module(const char* filePath, VkShaderModule* outShaderModule);
@@ -124,6 +148,6 @@ public:
 	VkPipelineColorBlendAttachmentState _colorBlendAttachment;
 	VkPipelineMultisampleStateCreateInfo _multisampling;
 	VkPipelineLayout _pipelineLayout;
-
+	VkPipelineDepthStencilStateCreateInfo _depthStencil;
 	VkPipeline build_pipeline(VkDevice device, VkRenderPass pass);
 };
